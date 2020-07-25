@@ -14,7 +14,7 @@ function Ticker() {
   const finnhubClient = new finnhub.DefaultApi()
    
   function handleChange(event) {
-    finnhubClient.quote(event.target.value, (error, data, response) => {
+    finnhubClient.quote(event.target.value.trim().toUpperCase(), (error, data, response) => {
       if (data.c !== undefined){ 
         setDisabled(false);
         setQuote(data.c); 
@@ -26,7 +26,7 @@ function Ticker() {
   }
 
   function handleSubmit(event) {
-    setTicker(curinput); 
+    setTicker(curinput.trim().toUpperCase()); 
     event.preventDefault();
   }
 
