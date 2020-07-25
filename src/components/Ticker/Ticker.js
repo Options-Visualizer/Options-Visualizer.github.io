@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import './Ticker.css';
+import Chart from '../Chart/Chart'
+import Button from 'react-bootstrap/Button';
 
 function Ticker() {
   const [curinput, setCurinput] = useState('');
   const [disabled, setDisabled] = useState(true);
   const [ticker, setTicker] = useState('');
   const [quote, setQuote] = useState('');
+  const [finalquote, setFinalquote] = useState('');
+  const [high, setHigh] = useState(0); 
+  const [low, setLow] = useState(0);
 
   const finnhub = require('finnhub');
  
@@ -17,7 +22,6 @@ function Ticker() {
     finnhubClient.quote(event.target.value.trim().toUpperCase(), (error, data, response) => {
       if (data.c !== undefined){ 
         setDisabled(false);
-        setQuote(data.c); 
       } else{ 
         setDisabled(true);
       }
@@ -26,19 +30,28 @@ function Ticker() {
   }
 
   function handleSubmit(event) {
+    finnhubClient.companyBasicFinancials(curinput.trim().toUpperCase(), "price", (error, data, response) => {
+      setHigh(data.metric['52WeekHigh']); 
+      setLow(data.metric['52WeekLow']);
+    });
+    finnhubClient.quote(curinput.trim().toUpperCase(), (error, data, response) => {
+      setQuote(data.c)
+    });    
     setTicker(curinput.trim().toUpperCase()); 
     event.preventDefault();
   }
 
   return (
-    <div className="Ticker-header"> 
-      <form onSubmit={handleSubmit}>
-        <label>
-          <input type="text" value={curinput} onChange={handleChange} />
-        </label>
-        <input type="submit" value="Submit" disabled={disabled}/>
-      </form>
-      {ticker !== '' && <p>{ticker} : {quote}</p>}
+    <div>
+      <div className="Ticker-div"> 
+        <form onSubmit={handleSubmit}>
+          <label>
+            <input type="text" placeholder="Enter Ticker Symbol Here" value={curinput} onChange={handleChange} className="Ticker-searchbar" />
+          </label>
+          <Button variant="outline-primary" type="submit" disabled={disabled} style={{float:"center"}}>Submit</Button>
+        </form>
+      </div>
+       <Chart ticker={ticker} quote={quote} high={high} low={low} />
     </div>
   );
 }

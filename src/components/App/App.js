@@ -6,9 +6,10 @@ function App() {
     <div className="App">
       <header className="App-header">
         <div>
-          Options Visualizer        
+          Options Visualizer &nbsp;    
+        
+        <img src={process.env.PUBLIC_URL + '/favicon.ico'} style={{verticalAlign: "middle"}} alt="Logo"></img>
         </div>
-        <img src={process.env.PUBLIC_URL + '/favicon.ico'} alt="Logo"></img>
       </header>
     </div>
   );

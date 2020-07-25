@@ -1,0 +1,22 @@
+.Chart {
+  text-align: center;
+}
+
+.Chart-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+.Chart-div {
+  background-color: rgba(172, 227, 250, 0.7);
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  width: 60%;
+  border-radius: 30px;
+  margin-top: 30px;
+  margin-left: auto; 
+  margin-right: auto;
+  padding: 5px;
+}
+
