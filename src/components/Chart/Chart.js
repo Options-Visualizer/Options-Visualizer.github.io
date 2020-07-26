@@ -4,11 +4,16 @@ import {Line} from 'react-chartjs-2';
 import 'chartjs-plugin-annotation';
 
 
-
 function Chart(info) {
   let chartLabels = []; 
   let verticalLines = [];
+  let pldata = []
+  let dataLabel = "";
+
   if (info.high !== 0){
+    const intQuote = Math.round(info.quote / 10) * 10;
+    pldata = [-150, -150, (info.quote - intQuote) * 100 - 150, (info.high - intQuote) * 100 - 150, 2 * (info.high - intQuote) * 100 - 150]
+    dataLabel = "Long " + intQuote + " call @ 1.50";
     chartLabels = [0, info.low, info.quote, info.high, info.high + info.high - info.quote];
     verticalLines = [
       {
@@ -16,10 +21,10 @@ function Chart(info) {
         mode: "vertical",
         scaleID: "x-axis-0",
         value: 1,
-        borderColor: "blue",
+        borderColor: "#38677D",
         borderWidth: 5,
         label: {
-          backgroundColor: "red",
+          backgroundColor: "#959296",
           content: "52 wk Low",
           enabled: true
         }
@@ -29,10 +34,10 @@ function Chart(info) {
         mode: "vertical",
         scaleID: "x-axis-0",
         value: 2,
-        borderColor: "blue",
+        borderColor: "#38677D",
         borderWidth: 5,
         label: {
-          backgroundColor: "red",
+          backgroundColor: "#959296",
           content: "Current Price",
           enabled: true
         }
@@ -42,10 +47,10 @@ function Chart(info) {
         mode: "vertical",
         scaleID: "x-axis-0",
         value: 3,
-        borderColor: "blue",
+        borderColor: "#38677D",
         borderWidth: 5,
         label: {
-          backgroundColor: "red",
+          backgroundColor: "#959296",
           content: "52 wk High",
           enabled: true
         }
@@ -56,13 +61,14 @@ function Chart(info) {
     labels: chartLabels,
     datasets: [
       {
-        label: 'Call',
+        
+        label: dataLabel,
         fill: false,
-        lineTension: 0.5,
+        lineTension: 0,
         backgroundColor: 'rgba(75,192,192,1)',
         borderColor: 'rgba(0,0,0,1)',
         borderWidth: 2,
-        data: []
+        data: pldata,
       }
     ]
   }
@@ -74,7 +80,7 @@ function Chart(info) {
         options={{
           title:{
             display:true,
-            text: info.ticker + " P/L Chart",
+            text: info.ticker + " Profit/Loss Chart",
             fontSize:20
           },
           legend:{
@@ -110,7 +116,7 @@ function Chart(info) {
           annotation: {
             drawTime: 'beforeDatasetsDraw',
             annotations: verticalLines,
-          }
+          },
         }}
       />
     </div>

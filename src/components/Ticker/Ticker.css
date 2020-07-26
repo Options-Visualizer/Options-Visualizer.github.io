@@ -18,11 +18,10 @@
 .Ticker-searchbar {
   width: 100%;
   box-sizing: border-box;
-  border: 2px solid #ccc;
-  border-radius: 4px;
+  border: 1.5px solid #959296;
+  border-radius: 0px;
   font-size: 16px;
-  background-color: white;
-  background-position: 10px 10px; 
+  background-color: white; 
   background-repeat: no-repeat;
   padding: 2px 25px 8px 10px;
 }

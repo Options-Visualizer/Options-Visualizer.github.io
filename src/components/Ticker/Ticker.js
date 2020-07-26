@@ -8,12 +8,11 @@ function Ticker() {
   const [disabled, setDisabled] = useState(true);
   const [ticker, setTicker] = useState('');
   const [quote, setQuote] = useState('');
-  const [finalquote, setFinalquote] = useState('');
   const [high, setHigh] = useState(0); 
   const [low, setLow] = useState(0);
 
   const finnhub = require('finnhub');
- 
+  
   const api_key = finnhub.ApiClient.instance.authentications['api_key'];
   api_key.apiKey = process.env.REACT_APP_API_KEY; 
   const finnhubClient = new finnhub.DefaultApi()
@@ -28,16 +27,21 @@ function Ticker() {
     });
     setCurinput(event.target.value);
   }
-
+  async function getHighLow(tick) { 
+    let response = await fetch('https://cloud.iexapis.com/stable/stock/' + tick + '/quote?token=' + process.env.REACT_APP_IEX_API_KEY);
+    let data = await response.json();
+    return data;
+  }
   function handleSubmit(event) {
-    finnhubClient.companyBasicFinancials(curinput.trim().toUpperCase(), "price", (error, data, response) => {
-      setHigh(data.metric['52WeekHigh']); 
-      setLow(data.metric['52WeekLow']);
+    let cleanInput = curinput.trim().toUpperCase();
+    getHighLow(cleanInput).then(data => {
+      setHigh(data.week52High);
+      setLow(data.week52Low);
     });
-    finnhubClient.quote(curinput.trim().toUpperCase(), (error, data, response) => {
+    finnhubClient.quote(cleanInput, (error, data, response) => {
       setQuote(data.c)
     });    
-    setTicker(curinput.trim().toUpperCase()); 
+    setTicker(cleanInput); 
     event.preventDefault();
   }
 
@@ -45,10 +49,10 @@ function Ticker() {
     <div>
       <div className="Ticker-div"> 
         <form onSubmit={handleSubmit}>
-          <label>
+          <label style={{paddingRight:"5px"}}>
             <input type="text" placeholder="Enter Ticker Symbol Here" value={curinput} onChange={handleChange} className="Ticker-searchbar" />
           </label>
-          <Button variant="outline-primary" type="submit" disabled={disabled} style={{float:"center"}}>Submit</Button>
+          <Button variant="outline-primary" type="submit" disabled={disabled} style={{float:"center", borderRadius: "0px"}}>Submit</Button>
         </form>
       </div>
        <Chart ticker={ticker} quote={quote} high={high} low={low} />
