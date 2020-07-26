@@ -52,7 +52,7 @@ function Ticker() {
           <label style={{paddingRight:"5px"}}>
             <input type="text" placeholder="Enter Ticker Symbol Here" value={curinput} onChange={handleChange} className="Ticker-searchbar" />
           </label>
-          <Button variant="outline-primary" type="submit" disabled={disabled} style={{float:"center", borderRadius: "0px"}}>Submit</Button>
+          <Button variant="outline-primary" type="submit" disabled = {disabled} style={{float:"center", borderRadius: "0px"}}>Use Ticker</Button>
         </form>
       </div>
        <Chart ticker={ticker} quote={quote} high={high} low={low} />
