@@ -20,7 +20,7 @@ function Chart(info) {
         type: "line",
         mode: "vertical",
         scaleID: "x-axis-0",
-        value: info.low,
+        value: 1,
         borderColor: "#38677D",
         borderWidth: 5,
         label: {
@@ -33,7 +33,7 @@ function Chart(info) {
         type: "line",
         mode: "vertical",
         scaleID: "x-axis-0",
-        value: info.quote,
+        value: 2,
         borderColor: "#38677D",
         borderWidth: 5,
         label: {
@@ -46,7 +46,7 @@ function Chart(info) {
         type: "line",
         mode: "vertical",
         scaleID: "x-axis-0",
-        value: info.high,
+        value: 3,
         borderColor: "#38677D",
         borderWidth: 5,
         label: {
