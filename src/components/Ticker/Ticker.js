@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './Ticker.css';
 import Chart from '../Chart/Chart'
 import Button from 'react-bootstrap/Button';
+import { SYMBOL_SET } from './TickerConstants';
 
 function Ticker() {
   const [curinput, setCurinput] = useState('');
@@ -11,36 +12,30 @@ function Ticker() {
   const [high, setHigh] = useState(0); 
   const [low, setLow] = useState(0);
 
-  const finnhub = require('finnhub');
-  
-  const api_key = finnhub.ApiClient.instance.authentications['api_key'];
-  api_key.apiKey = process.env.REACT_APP_API_KEY; 
-  const finnhubClient = new finnhub.DefaultApi()
-   
   function handleChange(event) {
-    finnhubClient.quote(event.target.value.trim().toUpperCase(), (error, data, response) => {
-      if (data.c !== undefined){ 
-        setDisabled(false);
-      } else{ 
-        setDisabled(true);
-      }
-    });
+    const cleanInput = event.target.value.trim().toUpperCase();
+    console.log(SYMBOL_SET.has(cleanInput));
+    if (cleanInput.length <= 5 && SYMBOL_SET.has(cleanInput)) {
+      setDisabled(false);
+    } else{ 
+      setDisabled(true);
+    }
     setCurinput(event.target.value);
   }
-  async function getHighLow(tick) { 
+  async function getTickerData(tick) { 
     let response = await fetch('https://cloud.iexapis.com/stable/stock/' + tick + '/quote?token=' + process.env.REACT_APP_IEX_API_KEY);
     let data = await response.json();
     return data;
   }
   function handleSubmit(event) {
     let cleanInput = curinput.trim().toUpperCase();
-    getHighLow(cleanInput).then(data => {
+    getTickerData(cleanInput).then(data => {
       setHigh(data.week52High);
       setLow(data.week52Low);
+      setQuote(data.latestPrice);
+      console.log(data);
     });
-    finnhubClient.quote(cleanInput, (error, data, response) => {
-      setQuote(data.c)
-    });    
+
     setTicker(cleanInput); 
     event.preventDefault();
   }
