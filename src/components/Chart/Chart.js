@@ -11,8 +11,12 @@ function Chart(info) {
   let dataLabel = "";
 
   if (info.high !== 0){
-    const intQuote = Math.round(info.quote / 10) * 10;
-    pldata = [-150, -150, (info.quote - intQuote) * 100 - 150, (info.high - intQuote) * 100 - 150, 2 * (info.high - intQuote) * 100 - 150]
+    const intQuote = Math.floor(info.quote / 5) * 5;
+    let third = (info.quote - intQuote) * 100 - 150; 
+    if (info.quote < intQuote) { 
+      third = -150;
+    }
+    pldata = [-150, -150, third, (info.high - intQuote) * 100 - 150, 2 * (info.high - intQuote) * 100 - 150]
     dataLabel = "Long " + intQuote + " call @ 1.50";
     chartLabels = [0, info.low, info.quote, info.high, info.high + info.high - info.quote];
     verticalLines = [
@@ -22,7 +26,7 @@ function Chart(info) {
         scaleID: "x-axis-0",
         value: 1,
         borderColor: "#38677D",
-        borderWidth: 5,
+        borderWidth: 2,
         label: {
           backgroundColor: "#959296",
           content: "52 wk Low",
@@ -35,7 +39,7 @@ function Chart(info) {
         scaleID: "x-axis-0",
         value: 2,
         borderColor: "#38677D",
-        borderWidth: 5,
+        borderWidth: 2,
         label: {
           backgroundColor: "#959296",
           content: "Current Price",
@@ -48,7 +52,7 @@ function Chart(info) {
         scaleID: "x-axis-0",
         value: 3,
         borderColor: "#38677D",
-        borderWidth: 5,
+        borderWidth: 2,
         label: {
           backgroundColor: "#959296",
           content: "52 wk High",
