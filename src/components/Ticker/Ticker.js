@@ -1,20 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Ticker.css';
 import Button from 'react-bootstrap/Button';
-import { SYMBOL_SET } from './TickerConstants';
-import { useDispatch } from 'react-redux'
 import { changeTickerAction } from '../../redux';
 import { connect } from 'react-redux';
-import allActions from './actions'
 
 function Ticker(props) {
   const [curinput, setCurinput] = useState('');
   const [disabled, setDisabled] = useState(true);
-  const dispatch = useDispatch()
+  const [symbols, setSymbols] = useState(new Set());
+  useEffect(() => {
+    async function getValidSymbols() {
+      let response = await fetch('https://cloud.iexapis.com/stable/ref-data/iex/symbols?token=' + process.env.REACT_APP_IEX_API_KEY);
+      let data = await response.json();
+      return data;
+    }
+    getValidSymbols().then(data => {
+      setSymbols(new Set(data.map(i => i.symbol)));
+    });  
+  }, []);
 
   function handleChange(event) {
     const cleanInput = event.target.value.trim().toUpperCase();
-    if (cleanInput.length <= 5 && SYMBOL_SET.has(cleanInput)) {
+    if (cleanInput.length <= 5 && symbols.has(cleanInput)) {
       setDisabled(false);
     } else{ 
       setDisabled(true);
@@ -24,7 +31,9 @@ function Ticker(props) {
 
   function handleSubmit(event) {
     let cleanInput = curinput.trim().toUpperCase();
-    (cleanInput) => dispatch({ type: 'changeTickerAction' })
+    props.changeTickerAction({
+      ticker: cleanInput
+    })
     event.preventDefault();
   }
 
@@ -40,14 +49,12 @@ function Ticker(props) {
   );
 }
 
-export default Ticker;
-
-/*const mapStateToProps = (state) => ({
+const mapStateToProps = (state) => ({
   ticker: state.ticker
 });
 
 
 export default connect(
-  null, 
+  mapStateToProps, 
   { changeTickerAction }
-)(Ticker);*/
+)(Ticker);
