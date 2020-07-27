@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import './Chart.css';
 import {Line} from 'react-chartjs-2';
 import 'chartjs-plugin-annotation';
-import { connect } from 'react-redux';
 import { useSelector } from 'react-redux'
 
 function Chart (props) {
@@ -13,6 +12,7 @@ function Chart (props) {
   const [quote, setQuote] = useState(0);
   const [high, setHigh] = useState(0); 
   const [low, setLow] = useState(0);
+  const symbol = useSelector(state => state.currentSymbol)
 
   useEffect(() => {
     async function getTickerData(tick) {
@@ -21,14 +21,14 @@ function Chart (props) {
       let data = await response.json();
       return data;
     }
-    if (props.ticker.ticker !== undefined ){
-      getTickerData(props.ticker.ticker).then(data => {
+    if (symbol !== undefined ){
+      getTickerData(symbol).then(data => {
         setHigh(data.week52High);
         setLow(data.week52Low);
         setQuote(data.latestPrice);
       });
     }
-  }, [props.ticker]);
+  }, [symbol]);
   
   if (high !== 0){
     const intQuote = Math.floor(quote / 5) * 5;
@@ -104,7 +104,7 @@ function Chart (props) {
         options={{
           title:{
             display:true,
-            text: (props.ticker.ticker === undefined ? "" : props.ticker.ticker) + " Profit/Loss Chart",
+            text: (symbol === undefined ? "" : symbol) + " Profit/Loss Chart",
             fontSize:20
           },
           legend:{
