@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import './Ticker.css';
 import Button from 'react-bootstrap/Button';
 import { SYMBOL_SET } from './TickerConstants';
+import { useDispatch } from 'react-redux'
 import { changeTickerAction } from '../../redux';
 import { connect } from 'react-redux';
+import allActions from './actions'
 
 function Ticker(props) {
   const [curinput, setCurinput] = useState('');
   const [disabled, setDisabled] = useState(true);
-
+  const dispatch = useDispatch()
 
   function handleChange(event) {
     const cleanInput = event.target.value.trim().toUpperCase();
@@ -22,25 +24,11 @@ function Ticker(props) {
 
   function handleSubmit(event) {
     let cleanInput = curinput.trim().toUpperCase();
-    props.changeTickerAction({
-      ticker: cleanInput
-    })
+    (cleanInput) => dispatch({ type: 'changeTickerAction' })
     event.preventDefault();
   }
 
   return (
-<<<<<<< HEAD
-    <div>
-      <div className="Ticker-div"> 
-        <form onSubmit={handleSubmit}>
-          <label style={{paddingRight:"5px"}}>
-            <input type="text" placeholder="Enter Ticker Symbol Here" value={curinput} onChange={handleChange} className="Ticker-searchbar" />
-          </label>
-          <Button variant="outline-primary" type="submit" disabled = {disabled} style={{float:"center", borderRadius: "0px"}}>Use Ticker</Button>
-        </form>
-      </div>
-       <Chart ticker={ticker} quote={quote} high={high} low={low} />
-=======
     <div className="Ticker-div"> 
       <form onSubmit={handleSubmit}>
         <label style={{paddingRight:"5px"}}>
@@ -48,17 +36,18 @@ function Ticker(props) {
         </label>
         <Button variant="outline-primary" type="submit" disabled={disabled} style={{float:"center", borderRadius: "0px"}}>Submit</Button>
       </form>
->>>>>>> 43acf632126e10a64eb4a618ce960a6728477123
     </div>
   );
 }
 
-const mapStateToProps = (state) => ({
+export default Ticker;
+
+/*const mapStateToProps = (state) => ({
   ticker: state.ticker
 });
 
 
 export default connect(
-  mapStateToProps, 
+  null, 
   { changeTickerAction }
-)(Ticker);
+)(Ticker);*/

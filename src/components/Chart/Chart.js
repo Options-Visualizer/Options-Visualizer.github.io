@@ -3,7 +3,7 @@ import './Chart.css';
 import {Line} from 'react-chartjs-2';
 import 'chartjs-plugin-annotation';
 import { connect } from 'react-redux';
-
+import { useSelector } from 'react-redux'
 
 function Chart (props) {
   let chartLabels = []; 
@@ -13,9 +13,6 @@ function Chart (props) {
   const [quote, setQuote] = useState(0);
   const [high, setHigh] = useState(0); 
   const [low, setLow] = useState(0);
-
-
-
 
   useEffect(() => {
     async function getTickerData(tick) {
@@ -150,10 +147,11 @@ function Chart (props) {
   );
 }
 
-const mapStateToProps = (state) => ({
+export default Chart;
+/*const mapStateToProps = (state) => ({
   ticker: state.ticker
 });
 
 export default connect(
   mapStateToProps, 
-)(Chart);
+)(Chart);*/
