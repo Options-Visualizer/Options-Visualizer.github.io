@@ -1,18 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Ticker.css';
 import Button from 'react-bootstrap/Button';
-import { SYMBOL_SET } from './TickerConstants';
 import { changeTickerAction } from '../../redux';
 import { connect } from 'react-redux';
 
 function Ticker(props) {
   const [curinput, setCurinput] = useState('');
   const [disabled, setDisabled] = useState(true);
-
+  const [symbols, setSymbols] = useState(new Set());
+  useEffect(() => {
+    async function getValidSymbols() {
+      console.log("got the symbols boss");
+      let response = await fetch('https://cloud.iexapis.com/stable/ref-data/iex/symbols?token=' + process.env.REACT_APP_IEX_API_KEY);
+      let data = await response.json();
+      return data;
+    }
+    getValidSymbols().then(data => {
+      setSymbols(new Set(data.map(i => i.symbol)));
+    });  
+  }, []);
 
   function handleChange(event) {
     const cleanInput = event.target.value.trim().toUpperCase();
-    if (cleanInput.length <= 5 && SYMBOL_SET.has(cleanInput)) {
+    if (cleanInput.length <= 5 && symbols.has(cleanInput)) {
       setDisabled(false);
     } else{ 
       setDisabled(true);
