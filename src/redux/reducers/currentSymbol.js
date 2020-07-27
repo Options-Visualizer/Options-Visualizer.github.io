@@ -1,6 +1,6 @@
 const currentSymbol = (state = "", action) => {
   switch (action.type) {
-    case 'CHANGE_TICKER':
+    case 'CHANGE_SYMBOL':
       return action.payload
     default:
       return state;
