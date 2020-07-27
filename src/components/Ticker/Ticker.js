@@ -10,7 +10,6 @@ function Ticker(props) {
   const [symbols, setSymbols] = useState(new Set());
   useEffect(() => {
     async function getValidSymbols() {
-      console.log("got the symbols boss");
       let response = await fetch('https://cloud.iexapis.com/stable/ref-data/iex/symbols?token=' + process.env.REACT_APP_IEX_API_KEY);
       let data = await response.json();
       return data;
