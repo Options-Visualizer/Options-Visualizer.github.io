@@ -2,7 +2,7 @@
   "name": "options-visualizer",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://geomaster453.github.io/",
+  "homepage": "https://options-visualizer.github.io/",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
