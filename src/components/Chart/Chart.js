@@ -148,10 +148,3 @@ function Chart (props) {
 }
 
 export default Chart;
-/*const mapStateToProps = (state) => ({
-  ticker: state.ticker
-});
-
-export default connect(
-  mapStateToProps, 
-)(Chart);*/
