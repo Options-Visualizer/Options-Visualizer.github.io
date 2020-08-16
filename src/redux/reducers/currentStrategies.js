@@ -1,6 +1,6 @@
 const currentStrategies = (state = [], action) => {
     switch (action.type) {
-      case 'NEW_STRATEGY':
+      case 'ADD_STRATEGY':
         return [
           ...state,
           {}
@@ -9,8 +9,8 @@ const currentStrategies = (state = [], action) => {
         return [
           ...state.slice(0, action.index),
           {
-             ...state[action.index],
-             strat: action.strat
+            strat: action.strat,
+            legs: []
           },
           ...state.slice(action.index + 1)
         ]
@@ -19,15 +19,20 @@ const currentStrategies = (state = [], action) => {
           ...state.slice(0, action.index),
           {
             ...state[action.index],
-            legs: [
-              ...state[action.index].legs.slice(0, action.leg),
-              {
+            legs: {
+              ...state[action.index].legs,
+              [action.leg]: {
                 ...state[action.index].legs[action.leg],
-                [action.field]: action.val
-              },
-              ...state[action.index].legs.slice(action.leg + 1)
-            ]
+                [action.field]: action.value
+              }
+            }
           },
+          ...state.slice(action.index + 1)
+        ]
+      case 'CLEAR_STRATEGY':
+        return [
+          ...state.slice(0, action.index),
+          {},
           ...state.slice(action.index + 1)
         ]
       case 'DELETE_STRATEGY':
@@ -35,9 +40,11 @@ const currentStrategies = (state = [], action) => {
           ...state.slice(0, action.index),
           ...state.slice(action.index + 1)
         ]
+      case 'CLEAR_ALL':
+        return []
       default:
         return state;
     }
   }
   
-  export default currentStrategies;
+export default currentStrategies;

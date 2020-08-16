@@ -1,7 +1,7 @@
 const changeSymbol = (newSymbol) => {
     return {
         type: "CHANGE_SYMBOL",
-        payload: newSymbol
+        symbol: newSymbol
     }
 }
 

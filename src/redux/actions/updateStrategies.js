@@ -1,6 +1,6 @@
-const newStrategy = () => {
+const addStrategy = () => {
     return {
-        type: "NEW_STRATEGY",
+        type: "ADD_STRATEGY"
     }
 }
 
@@ -22,6 +22,13 @@ const updateLeg = (i, l, f, newValue) => {
     }
 }
 
+const clearStrategy = (i) => {
+    return {
+        type: "CLEAR_STRATEGY",
+        index: i
+    }
+}
+
 const deleteStrategy = (i) => {
     return {
         type: "DELETE_STRATEGY",
@@ -29,9 +36,17 @@ const deleteStrategy = (i) => {
     }
 }
 
+const clearAll = () => {
+    return {
+        type: "CLEAR_ALL"
+    }
+}
+
 export default {
-    newStrategy,
+    addStrategy,
     updateStrategy,
     updateLeg,
-    deleteStrategy
+    clearStrategy,
+    deleteStrategy,
+    clearAll
 };

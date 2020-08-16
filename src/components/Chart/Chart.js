@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './Chart.css';
 import {Line} from 'react-chartjs-2';
 import 'chartjs-plugin-annotation';
@@ -14,7 +14,7 @@ function Chart (props) {
   const [low, setLow] = useState(0);
   const symbol = useSelector(state => state.currentSymbol)
 
-  useEffect(() => {
+  /*useEffect(() => {
     async function getTickerData(tick) {
       console.log(tick);
       let response = await fetch('https://cloud.iexapis.com/stable/stock/' + tick + '/quote?token=' + process.env.REACT_APP_IEX_API_KEY);
@@ -28,8 +28,23 @@ function Chart (props) {
         setQuote(data.latestPrice);
       });
     }
-  }, [symbol]);
-  
+  }, [symbol]);*/
+
+  async function getTickerData(tick) {
+    console.log(tick);      
+    let response = await fetch('https://cloud.iexapis.com/stable/stock/' + tick + '/quote?token=' + process.env.REACT_APP_IEX_API_KEY);
+    let data = await response.json();
+    return data;
+  }
+
+  if (symbol !== undefined ){
+    getTickerData(symbol).then(data => {
+      setHigh(data.week52High);
+      setLow(data.week52Low);
+      setQuote(data.latestPrice);
+    });
+  }
+
   if (high !== 0){
     const intQuote = Math.floor(quote / 5) * 5;
     let third = (quote - intQuote) * 100 - 150; 
