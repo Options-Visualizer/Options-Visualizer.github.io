@@ -1,7 +1,7 @@
 const currentSymbol = (state = "", action) => {
   switch (action.type) {
     case 'CHANGE_SYMBOL':
-      return action.payload
+      return action.symbol
     default:
       return state;
   }

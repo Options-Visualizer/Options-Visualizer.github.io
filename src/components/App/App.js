@@ -2,7 +2,9 @@ import React from 'react';
 import './App.css';
 //components 
 import Ticker from '../Ticker/Ticker';
+import AddClear from '../AddClear/AddClear';
 import Chart from '../Chart/Chart';
+import StratContainer from '../Strategy_Form/StratContainer'
 
 export default function App() {
   return (
@@ -14,6 +16,8 @@ export default function App() {
         </div>
       </header>
       <Ticker />
+      <AddClear />
+      <StratContainer />
       <Chart />
     </div>
   );
