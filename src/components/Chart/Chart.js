@@ -1,92 +1,113 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Chart.css';
 import {Line, Scatter} from 'react-chartjs-2';
 import 'chartjs-plugin-annotation';
 import { useSelector } from 'react-redux'
+import * as zoom from 'chartjs-plugin-zoom';
+
+const borderColors = ["#191716", "#E6AF2E", "#E0E2DB", "#BEB7A4"];
 
 function Chart (props) {
   let verticalLines = [];
-  let pldata = []
   let dataLabel = "";
   const [quote, setQuote] = useState(0);
   const [high, setHigh] = useState(0); 
   const [low, setLow] = useState(0);
   const [chartData, setChartData] = useState([]);
-  const symbol = useSelector(state => state.currentSymbol)
+  const [chartBounds, setChartBounds] = useState([0, 0]);
 
-<<<<<<< HEAD
-  /*useEffect(() => {
-=======
-  let premium = 10; 
-  let strike = quote;
-  let strategy = "Short"
+  const symbol = useSelector(state => state.currentSymbol);
+  const strategies = useSelector(state => state.currentStrategies);
 
-  let factor = -1; 
-  if (strategy === "Short"){ 
-    factor = 1;
-  }
-  
+
+
   useEffect(() => {
 
->>>>>>> Modified charts
     async function getTickerData(tick) {
-      console.log(tick);
       let response = await fetch('https://cloud.iexapis.com/stable/stock/' + tick + '/quote?token=' + process.env.REACT_APP_IEX_API_KEY);
       let data = await response.json();
       return data;
     }
     if (symbol !== undefined && symbol !== ''){
       getTickerData(symbol).then(data => {
-        console.log(data);
-        let chart_data = []; 
-        let cur_x = Math.ceil(data.week52Low - data.latestPrice/10 - 10);
-        while (cur_x <= Math.ceil(data.week52High + data.latestPrice/10 + 10)){
-          let cur_y = factor * premium;
-
-          if (cur_x - data.latestPrice >= premium){
-            cur_y = - factor * (cur_x - data.latestPrice - premium);
-          }
-          
-          chart_data.push({x: Number(cur_x).toFixed(2), y: Number(cur_y).toFixed(2)});
-          cur_x += 10;
-        }
-        console.log(chart_data);
+        //TODO: Add y calculation here as well 
         setHigh(data.week52High);
         setLow(data.week52Low);
         setQuote(data.latestPrice);
-        setChartData(chart_data);
       });
     }
-<<<<<<< HEAD
-  }, [symbol]);*/
-
-  async function getTickerData(tick) {
-    console.log(tick);      
-    let response = await fetch('https://cloud.iexapis.com/stable/stock/' + tick + '/quote?token=' + process.env.REACT_APP_IEX_API_KEY);
-    let data = await response.json();
-    return data;
-  }
-
-  if (symbol !== undefined ){
-    getTickerData(symbol).then(data => {
-      setHigh(data.week52High);
-      setLow(data.week52Low);
-      setQuote(data.latestPrice);
-    });
-  }
-
-=======
 
   }, [symbol]);
+
+  let lower_bound = Math.ceil(low - quote/10 - 10);
+  let upper_bound = Math.ceil(high + quote/10 + 10);
+  useEffect(() => { 
+    let chart_data = [];
+
+    for (let i = 0; i < strategies.length; i++){
+      for (let j = 0; strategies[i].legs !== undefined && j < Object.keys(strategies[i].legs).length; j++){
+        if (Number(strategies[i].legs[j].strike) + quote/10 > upper_bound){ 
+          upper_bound = Number(strategies[i].legs[j].strike) + quote/10;
+        }
+      }
+    }
+
+    for (let i = 0; i < strategies.length; i++){
+      chart_data.push([]);
+      if (low + high + quote !== 0){
+        let cur_x = lower_bound;
+        while (cur_x <= upper_bound){
+          
+          chart_data[i].push({x: Number(cur_x).toFixed(2), y: 0});
+          cur_x += 10;
+        }
+      }
+      for (let j = 0; strategies[i].legs !== undefined && j < Object.keys(strategies[i].legs).length; j++){
+        for (let k = 0; k < chart_data[i].length; k++){
   
->>>>>>> Modified charts
+          let factor = strategies[i].legs[j].direction === "-" ? 1 : -1
+          let type = strategies[i].legs[j].type; 
+          let premium = strategies[i].legs[j].premium * 100;
+          let strike = strategies[i].legs[j].strike;
+          let quantity = strategies[i].legs[j].quantity;
+          let x = parseFloat(chart_data[i][k].x);
+  
+          let cur_y = factor * premium;
+  
+          // Handle calls 
+          if (type === "C" && x >= strike){
+            cur_y = - factor * (x - strike - premium);
+          }
+          
+          // Handle puts 
+          if (type === "P" && x <= strike){ 
+            cur_y = -factor * (strike - x - premium)
+          }
+          if (premium !== 0 && strike !== 0 && premium !== undefined && strike !== undefined){
+            chart_data[i][k].y += cur_y * quantity;
+          }
+        }
+      }
+    }
+    if (strategies.length == 0){
+      setChartData([]);
+    }
+    else if (strategies[0].legs === undefined){ 
+      setChartData([]);
+    }
+    else {
+      setChartData(chart_data);
+    }
+
+
+  }, [strategies])
+  
   if (high !== 0){
     const intQuote = Math.floor(quote / 5) * 5;
     let third = (quote - intQuote) * 100 - 150; 
     if (quote < intQuote) { 
       third = -150;
     }
-    pldata = [1, 2,,4];
     dataLabel = "Long " + intQuote + " call @ 1.50";
     verticalLines = [
       {
@@ -138,20 +159,21 @@ function Chart (props) {
       }      
     ];
   }
-  const state = {
-    datasets: [
-      {
-        label: dataLabel,
-        fill: false,
-        lineTension: 0,
-        backgroundColor: 'rgba(75,192,192,1)',
-        borderColor: 'rgba(0,0,0,1)',
-        borderWidth: 2,
-        data: chartData
-      }
-    ]
-  }
+  
+  
+  let state = {datasets: []}; 
 
+  for (let i = 0; i < chartData.length; i++){ 
+    state.datasets.push({
+      label: "Strategy " + (i + 1),
+      fill: false, 
+      lineTension: 0, 
+      backgroundColor: 'rgba(75, 192, 192, 1)', 
+      borderColor: borderColors[i], 
+      borderWidth: 2, 
+      data: chartData[i],
+    })
+  }
   return (
     <div className="Chart-div">
       <Line
@@ -190,15 +212,38 @@ function Chart (props) {
                 callback: function(value, index, values) { 
                   return '$' + value;
                 }, 
-                min: chartData[0] == undefined ? 0 :  Math.floor(chartData[0].x), 
-                max: chartData[chartData.length -1] == undefined ? 1 : Math.floor(chartData[chartData.length -1].x),
-              }
-            }]
-          }, 
-          annotation: {
-            drawTime: 'beforeDatasetsDraw',
-            annotations: verticalLines,
+                min: lower_bound,
+                max: upper_bound,
+              },
+            }],
           },
+          plugins: {
+            zoom: {
+                // Container for pan options
+                pan: {
+                    // Boolean to enable panning
+                    enabled: true,
+
+                    // Panning directions. Remove the appropriate direction to disable 
+                    // Eg. 'y' would only allow panning in the y direction
+                    mode: 'xy'
+                },
+
+                // Container for zoom options
+                zoom: {
+                    // Boolean to enable zooming
+                    enabled: true,
+
+                    // Zooming directions. Remove the appropriate direction to disable 
+                    // Eg. 'y' would only allow zooming in the y direction
+                    mode: 'xy',
+                }
+            }
+        }, 
+        annotation: {
+          drawTime: 'beforeDatasetsDraw',
+          annotations: verticalLines,
+        },
         }}
       />
     </div>
