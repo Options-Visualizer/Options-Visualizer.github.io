@@ -68,6 +68,7 @@ function Chart (props) {
           let factor = strategies[i].legs[j].direction === "-" ? 1 : -1
           let type = strategies[i].legs[j].type; 
           let premium = strategies[i].legs[j].premium * 100;
+          console.log(premium);
           let strike = strategies[i].legs[j].strike;
           let quantity = strategies[i].legs[j].quantity;
           let x = parseFloat(chart_data[i][k].x);
@@ -76,12 +77,12 @@ function Chart (props) {
   
           // Handle calls 
           if (type === "C" && x >= strike){
-            cur_y = - factor * (x - strike - premium);
+            cur_y = - factor * ((x - strike)*100 - premium);
           }
           
           // Handle puts 
           if (type === "P" && x <= strike){ 
-            cur_y = -factor * (strike - x - premium)
+            cur_y = -factor * ((strike - x)*100 - premium)
           }
           if (premium !== 0 && strike !== 0 && premium !== undefined && strike !== undefined){
             chart_data[i][k].y += cur_y * quantity;
@@ -232,7 +233,7 @@ function Chart (props) {
                 // Container for zoom options
                 zoom: {
                     // Boolean to enable zooming
-                    enabled: true,
+                    enabled: false,
 
                     // Zooming directions. Remove the appropriate direction to disable 
                     // Eg. 'y' would only allow zooming in the y direction
