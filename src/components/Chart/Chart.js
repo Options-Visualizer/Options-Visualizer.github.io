@@ -43,12 +43,13 @@ function Chart (props) {
   let upper_bound = Math.ceil(high + quote/10 + 10);
   useEffect(() => { 
     let chart_data = [];
-
+    let strikes = [];
     for (let i = 0; i < strategies.length; i++){
       for (let j = 0; strategies[i].legs !== undefined && j < Object.keys(strategies[i].legs).length; j++){
         if (Number(strategies[i].legs[j].strike) + quote/10 > upper_bound){ 
           upper_bound = Number(strategies[i].legs[j].strike) + quote/10;
         }
+        strikes.push(strategies[i].legs[j].strike); 
       }
     }
 
@@ -57,20 +58,22 @@ function Chart (props) {
       if (low + high + quote !== 0){
         let cur_x = lower_bound;
         while (cur_x <= upper_bound){
-          
           chart_data[i].push({x: Number(cur_x).toFixed(2), y: 0});
+          strikes.forEach((strike) => {
+            if (strike > cur_x && strike < cur_x + 10){ 
+              chart_data[i].push({x: strike, y: 0 });
+            }
+          });
           cur_x += 10;
         }
       }
       for (let j = 0; strategies[i].legs !== undefined && j < Object.keys(strategies[i].legs).length; j++){
+        let factor = strategies[i].legs[j].direction === "-" ? 1 : -1
+        let type = strategies[i].legs[j].type; 
+        let premium = strategies[i].legs[j].premium * 100;
+        let strike = strategies[i].legs[j].strike;
+        let quantity = strategies[i].legs[j].quantity;
         for (let k = 0; k < chart_data[i].length; k++){
-  
-          let factor = strategies[i].legs[j].direction === "-" ? 1 : -1
-          let type = strategies[i].legs[j].type; 
-          let premium = strategies[i].legs[j].premium * 100;
-          console.log(premium);
-          let strike = strategies[i].legs[j].strike;
-          let quantity = strategies[i].legs[j].quantity;
           let x = parseFloat(chart_data[i][k].x);
   
           let cur_y = factor * premium;
@@ -213,7 +216,7 @@ function Chart (props) {
                 callback: function(value, index, values) { 
                   return '$' + value;
                 }, 
-                min: lower_bound,
+                min: Math.max(0, lower_bound),
                 max: upper_bound,
               },
             }],
